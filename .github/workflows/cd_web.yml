@@ -24,3 +24,14 @@ jobs:
             - DATABASE_URL=${{ secrets.DATABASE_URL }}
           push: true
           tags: saatvik10/monorepo-dc-web:${{ github.sha }}
+
+      - name: Deploy to the VM
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/ssh_key
+          chmod 600 ~/ssh_key
+          ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@65.0.110.118 << 'EOF'
+            docker stop user_web || true
+            docker rm user_web || true
+            docker pull saatvik10/monorepo-dc-web:${{ github.sha }}
+            docker run --name user_web -d -p 3000:3000 saatvik10/monorepo-dc-web:${{ github.sha }}
+          EOF
