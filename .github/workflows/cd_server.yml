@@ -26,3 +26,9 @@ jobs:
           file: ./docker/Dockerfile.server
           push: true
           tags: saatvik10/monorepo-dc-server:${{ github.sha }}
+
+      - name: Deploy to the VM
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
+          chmod 700 /home/runner/ssh_key
+          ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@13.127.61.168 -t "docker stop user_server && docker run --name user_server -d -p 8080:8080 saatvik10/monorepo-dc-server:${{ github.sha }}"
