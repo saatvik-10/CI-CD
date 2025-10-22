@@ -27,4 +27,4 @@ jobs:
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
           chmod 700 /home/runner/ssh_key
-          ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@13.127.61.168 -t "docker stop user_ws && docker run --name user_ws -d -p 8081:8081 saatvik10/monorepo-dc-ws:${{ github.sha }}"
+          ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@65.0.110.118 -t "docker stop user_ws && docker run --name user_ws -d -p 8081:8081 saatvik10/monorepo-dc-ws:${{ github.sha }}"
