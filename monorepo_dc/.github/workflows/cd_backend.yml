@@ -23,6 +23,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./docker/Dockerfile.backend
+          file: ./docker/Dockerfile.server
           push: true
           tags: saatvik10/monorepo-dc-server:${{ github.sha }}
