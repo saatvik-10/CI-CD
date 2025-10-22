@@ -5,8 +5,8 @@
 name: Deploy the server
 on:
   push:
-    branches: [ main ]
-jobs: 
+    branches: [main]
+jobs:
   build:
     runs-on: ubuntu-latest
     steps:
@@ -18,8 +18,8 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      
-      - name: Build and push 
+
+      - name: Build and push
         uses: docker/build-push-action@v4
         with:
           context: .
@@ -29,6 +29,11 @@ jobs:
 
       - name: Deploy to the VM
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
-          chmod 700 /home/runner/ssh_key
-          ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@65.0.110.118 -t "docker stop user_server && docker run --name user_server -d -p 8080:8080 saatvik10/monorepo-dc-server:${{ github.sha }}"
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
+          chmod 600 ~/ssh_key
+          ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@65.0.110.118 << 'EOF'
+            docker stop user_server || true
+            docker rm user_server || true
+            docker pull saatvik10/monorepo-dc-server:${{ github.sha }}
+            docker run --name user_server -d -p 8080:8080 saatvik10/monorepo-dc-server:${{ github.sha }}
+          EOF
